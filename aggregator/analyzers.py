@@ -1,6 +1,8 @@
 from abc import ABC
 from enum import IntEnum
 
+from .utills import get_db_connection
+
 
 class AnalyzerType(IntEnum):
     TIME_DIFFERENCE = 10000
@@ -25,7 +27,7 @@ analyzer_factory = AnalysisFactory()
 
 
 class Analyzer(ABC):
-    def __init(self, table_name):
+    def __init__(self, table_name):
         self.table_name = table_name
 
     def analyze(self):
@@ -33,14 +35,38 @@ class Analyzer(ABC):
 
 
 class TimeDifference(Analyzer):
-    pass
+    def analyze(self):
+        raw_sql = """
+        SELECT CAST (
+            (
+                JULIANDAY((
+                    SELECT event_time
+                    FROM "%s"
+                    ORDER BY `index` DESC limit 1))
+                -
+                JULIANDAY((
+                    SELECT event_time
+                    FROM %s
+                    ORDER BY `index` limit 1))
+            ) * 24 * 60 As Integer
+        );
+        """ % (self.table_name, self.table_name)
+        connection = get_db_connection()
+        result = connection.execute(raw_sql).fetchone()[0]
+
+        return result
 
 
 analyzer_factory.register_analyzer(AnalyzerType.TIME_DIFFERENCE, TimeDifference)
 
 
 class TotalRows(Analyzer):
-    pass
+    def analyze(self):
+        raw_sql = 'SELECT COUNT(*) FROM "%s";' % (self.table_name, )
+        connection = get_db_connection()
+        result = connection.execute(raw_sql).fetchone()[0]
+
+        return result
 
 
 analyzer_factory.register_analyzer(AnalyzerType.TOTAL_ROWS, TotalRows)

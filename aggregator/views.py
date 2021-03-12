@@ -12,10 +12,6 @@ from .tasks import persist_data
 # Create your views here.
 @csrf_exempt
 def aggregate(request):
-    # TODO
-    #    receive customer_id and events csv
-    #    trigger event for saving csv
-    #    increase file size at django settings
     if request.method == 'POST':
         customer_id = request.POST.get('customer_id', None)
         if customer_id is None:
@@ -28,6 +24,8 @@ def aggregate(request):
         persist_data.delay(customer_id, f.name)
 
         return JsonResponse({'msg': 'success'})
+
+    return HttpResponseBadRequest()
 
 
 @csrf_exempt
@@ -44,4 +42,6 @@ def analyze(request):
 
         result = class_(table_name).analyze()
 
-        return JsonResponse(result, status=HTTPStatus.OK)
+        return JsonResponse(result, status=HTTPStatus.OK, safe=False)
+
+    return HttpResponseBadRequest()
