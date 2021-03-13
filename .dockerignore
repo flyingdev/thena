@@ -1,0 +1,17 @@
+**/*.pyc
+
+db.sqlite3
+
+venv
+
+.env
+
+.git
+.gitignore
+LICENSE
+VERSION
+README.md
+Changelog.md
+Makefile
+docker-compose.yml
+docs

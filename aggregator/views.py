@@ -9,7 +9,6 @@ from .analyzers import analyzer_factory
 from .tasks import persist_data
 
 
-# Create your views here.
 @csrf_exempt
 def aggregate(request):
     if request.method == 'POST':
@@ -30,8 +29,6 @@ def aggregate(request):
 
 @csrf_exempt
 def analyze(request):
-    # TODO
-    #    retrieve customer id and analysis type
     if request.method == 'POST':
         params = json.loads(request.body.decode('utf-8'))
         customer_id = params['customer_id']

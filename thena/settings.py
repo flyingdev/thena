@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'thena.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DB_FILE = os.path.join(BASE_DIR, 'db.sqlite3')
+DB_FILE = os.getenv('DB_FILE', os.path.join(BASE_DIR, 'db.sqlite3'))
 
 DATABASES = {
     'default': {
@@ -126,7 +126,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CELERY_BROKER_URL = os.getenv('BROKER_URL', 'redis://localhost:6379')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379')
 
 # 100M
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440 * 40
